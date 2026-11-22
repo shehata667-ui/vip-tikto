@@ -196,6 +196,27 @@ export const QueueScreen: React.FC<QueueScreenProps> = ({
                   </div>
                 )}
 
+                {/* Error details */}
+                {isError && job.errorMessage && (
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      color: '#fca5a5',
+                      backgroundColor: 'rgba(239,68,68,0.1)',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      lineHeight: 1.5,
+                      wordBreak: 'break-word',
+                      direction: 'ltr',
+                      textAlign: 'left',
+                      maxHeight: '120px',
+                      overflowY: 'auto'
+                    }}
+                  >
+                    {job.errorMessage}
+                  </div>
+                )}
+
                 {/* Completed Action Buttons */}
                 {isDone && job.outputFilename && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
@@ -226,9 +247,9 @@ export const QueueScreen: React.FC<QueueScreenProps> = ({
                         onClick={async () => {
                           try {
                             await saveJobToGallery(job);
-                            onShowToast('✅ تم الحفظ في المعرض (مجلد Movies/TikTokStudio)');
+                            onShowToast?.('✅ تم الحفظ في المعرض (مجلد Movies/TikTokStudio)');
                           } catch (e: any) {
-                            onShowToast(String(e?.message || e));
+                            onShowToast?.(String(e?.message || e));
                           }
                         }}
                         style={{
