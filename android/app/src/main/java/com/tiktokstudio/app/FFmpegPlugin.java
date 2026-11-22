@@ -43,6 +43,49 @@ import java.util.Iterator;
 @CapacitorPlugin(name = "FFmpegEngine")
 public class FFmpegPlugin extends Plugin {
 
+    // أول خطأ حصل عند تحميل FFmpeg (مع سلسلة الأسباب) لعرضه للمستخدم
+    private static String initError = null;
+
+    private static String describe(Throwable t) {
+        StringBuilder sb = new StringBuilder();
+        int depth = 0;
+        while (t != null && depth < 6) {
+            if (depth > 0) sb.append(" <- ");
+            sb.append(t.getClass().getSimpleName()).append(": ").append(t.getMessage());
+            t = t.getCause();
+            depth++;
+        }
+        return sb.toString();
+    }
+
+    private String nativeDiag() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" | abis=").append(java.util.Arrays.toString(Build.SUPPORTED_ABIS));
+        try {
+            File d = new File(getContext().getApplicationInfo().nativeLibraryDir);
+            String[] names = d.list();
+            int n = names == null ? 0 : names.length;
+            boolean kit = false;
+            if (names != null) for (String x : names) if (x.contains("ffmpegkit")) kit = true;
+            sb.append(" | libs=").append(n).append(" ffmpegkit=").append(kit);
+        } catch (Throwable ignored) { }
+        return sb.toString();
+    }
+
+    private void checkInit() {
+        if (initError != null) return;
+        try {
+            FFmpegKitConfig.getFFmpegVersion();
+        } catch (Throwable t) {
+            initError = describe(t) + nativeDiag();
+        }
+    }
+
+    @Override
+    public void load() {
+        checkInit();
+    }
+
     private File exportsDir() {
         File base = getContext().getExternalFilesDir(null);
         if (base == null) base = getContext().getFilesDir();
@@ -73,14 +116,16 @@ public class FFmpegPlugin extends Plugin {
     @PluginMethod
     public void status(PluginCall call) {
         JSObject o = new JSObject();
-        try {
-            String v = FFmpegKitConfig.getFFmpegVersion();
+        checkInit();
+        if (initError == null) {
+            String v = null;
+            try { v = FFmpegKitConfig.getFFmpegVersion(); } catch (Throwable ignored) { }
             o.put("available", true);
             o.put("version", v == null ? "" : v);
-        } catch (Throwable t) {
+        } else {
             o.put("available", false);
             o.put("version", "");
-            o.put("error", String.valueOf(t));
+            o.put("error", initError);
         }
         o.put("exportsDir", exportsDir().getAbsolutePath());
         o.put("overlaysDir", subCache("overlays").getAbsolutePath());
@@ -225,7 +270,7 @@ public class FFmpegPlugin extends Plugin {
                 o.put("hasAudio", audio);
                 call.resolve(o);
             } catch (Throwable e) {
-                call.reject("فشل فحص الفيديو: " + e);
+                call.reject("فشل فحص الفيديو: " + (initError != null ? initError : describe(e)));
             }
         }).start();
     }
@@ -267,7 +312,7 @@ public class FFmpegPlugin extends Plugin {
                         notifyListeners("progress", e);
                     });
         } catch (Throwable t) {
-            call.reject("تعذر تشغيل FFmpeg: " + t);
+            call.reject("تعذر تشغيل FFmpeg: " + (initError != null ? initError : describe(t)));
         }
     }
 
