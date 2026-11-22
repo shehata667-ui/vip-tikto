@@ -1,0 +1,20 @@
+{
+  "name": "صانع تيك توك | TikTok Studio",
+  "short_name": "TikTokStudio",
+  "description": "تطبيق تجهيز فيديوهات تيك توك 9:16 مع كابشن عربي وحذف السكتات",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090a0f",
+  "theme_color": "#fe2c55",
+  "orientation": "portrait-primary",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

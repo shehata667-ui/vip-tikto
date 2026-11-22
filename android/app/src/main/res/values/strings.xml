@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TikTok Studio</string>
+    <string name="title_activity_main">TikTok Studio</string>
+    <string name="package_name">com.tiktokstudio.app</string>
+    <string name="custom_url_scheme">com.tiktokstudio.app</string>
+</resources>
