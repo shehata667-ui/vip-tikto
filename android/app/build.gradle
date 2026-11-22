@@ -47,7 +47,7 @@ dependencies {
     implementation project(':capacitor-android')
     implementation "androidx.activity:activity:$androidxActivityVersion"
     // محرك FFmpeg داخل التطبيق (نسخة مصانة تدعم 16KB)
-    implementation 'io.github.jamaismagic.ffmpeg:ffmpeg-kit-lts-full-16kb:6.1.4'
+    implementation 'io.github.jamaismagic.ffmpeg:ffmpeg-kit-lts-tls-16kb:6.1.4'
     implementation 'com.arthenica:smart-exception-java:0.2.1'
     implementation 'com.arthenica:smart-exception-common:0.2.1'
     testImplementation "junit:junit:$junitVersion"
